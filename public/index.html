@@ -30,11 +30,11 @@
   </head>
   <body>
     <div id="app" class="app d-flex flex-column flex-md-column-reverese" style="width: 100%; height: 100%;">
-      <main class="app_main bg-light" style="flex-grow: 1; overflow: auto;" v-if="isLoaded">
+      <main class="bg-light" style="flex-grow: 1; overflow: auto; position: relative" v-if="isLoaded">
         <router-view></router-view>
       </main>
       <nav class="app_nav">
-        <ul class="list-unstyled p-0 px-3 m-0 d-flex justify-content-between bg-danger">
+        <ul class="list-unstyled py-1 px-3 m-0 d-flex justify-content-between bg-danger">
           <li>
             <router-link to="/home" class="d-block py-2 px-3 text-white">
               <i class="fas fa-home"></i>
@@ -57,8 +57,8 @@
       </div>
     </div>
     <script type="text/x-template" id="home-scene-template">
-      <div class="d-flex flex-column">
-        <div class="bg-danger text-white d-flex justify-content-center px-1 align-items-center">
+      <div class="d-flex flex-column" style="position:absolute; top: 0; left:0; width: 100%; height:100%;">
+        <div class="bg-danger text-white d-flex justify-content-center p-1 align-items-center" style="flex-shrink: 0;">
           <strong class="py-2">ホーム</strong>
         </div>
         <div style="flex-grow: 1; overflow: auto">
@@ -71,20 +71,29 @@
                     <span v-else-if="player.position == 'long'" class="btn btn-success btn-sm btn-block">ロング</span>
                     <span v-else-if="player.position == 'none'" class="btn btn-secondary btn-sm btn-block">ノーポジ</span>
                   </div>
-                  <img v-if="player.icon" v-bind:src="player.icon" class="w-100" />
-                  <img v-else src="https://dummyimage.com/512/EEE/CCC?text=NoIcon" class="w-100" />
-                  <div class="p-1">
-                    <small><strong>{{player.displayName}}</strong></small>
+                  <div class="mb-1" :style="{
+                    'width':'100%',
+                    'box-sizing':'content-box',
+                    'padding-bottom':' 100%',
+                    'background-position':'center',
+                    'background-size':'cover',
+                    'background-image': 'url(' + (player.icon ? player.icon : 'https://dummyimage.com/512/EEE/CCC?text=NoIcon') + ')'
+                  }"></div>
+                  <div class="px-1 mb-1">
+                    <strong>{{player.displayName}}</strong>
                   </div>
-                  <div class="p-1 text-right">
+                  <div class="px-1 mb-1 text-right" style="font-size:14px; line-height: 1.2;">
                     <span :class="{
                       'text-success': player.amount - 10000 > 0,
                       'text-danger': player.amount - 10000 < 0,
                     }">
-                      {{player.amount}} <small>(<span v-if="player.amount - 10000 > 0">+</span>{{player.amount - 10000}})</small>
+                      {{player.amount}}<br/>
+                      <span style="font-size:12px;">
+                        (<span v-if="player.amount - 10000 > 0">+</span>{{player.amount - 10000}})
+                      </span>
                     </span>
                   </div>
-                  <div class="p-1">
+                  <div class="px-1 pb-1">
                     <small class="text-muted">{{player.message}}</small>
                   </div>
                 </div>
@@ -95,30 +104,38 @@
       </div>
     </script>
     <script type="text/x-template" id="activities-scene-template">
-      <div class="d-flex flex-column">
-        <div class="bg-danger text-white d-flex justify-content-center px-1 align-items-center">
-            <strong class="py-2">タイムライン</strong>
+      <div class="d-flex flex-column" style="position:absolute; top: 0; left:0; width: 100%; height:100%;">
+        <div class="bg-danger text-white d-flex justify-content-center p-1 align-items-center" style="flex-shrink: 0;">
+          <strong class="py-2">タイムライン</strong>
         </div>
-        <div class="pt-2" style="flex-grow: 1; overflow: auto">
-          <article class="bg-white border-bottom d-flex px-2 py-3" v-for="activity in activities">
-            <div style="width: 40px; min-width: 40px;" class="mr-2">
-              <img v-if="playerIcons && playerIcons[activity.authorId]" :src="playerIcons[activity.authorId]" class="w-100 rounded" />
-              <img v-else src="https://dummyimage.com/40/EEE/CCC?text=NoIcon" class="w-100 rounded" />
-            </div>
-            <div style="flex-grow: 1;">
-              <header class="d-flex justify-content-between mb-2">
-                <small><strong>{{activity.displayName}}</strong></small>
-                <time v-bind:time="activity.time"><small class="text-muted">{{activity.time}}</small></time>
-              </header>
-              <p class="m-0" style="white-space: pre;">{{activity.content}}</p>
-            </div>
-          </article>
+        <div class="pt-2 pb-4" style="flex-grow: 1; overflow: auto">
+          <div class="border-top">
+            <article class="bg-white border-bottom d-flex px-2 py-3" v-for="activity in activities">
+              <div style="width: 40px; min-width: 40px;" class="mr-2">
+                <div :style="{
+                  'width':'100%',
+                  'box-sizing':'content-box',
+                  'padding-bottom':' 100%',
+                  'background-position':'center',
+                  'background-size':'cover',
+                  'background-image': 'url(' + (playerIcons && playerIcons[activity.authorId] ? playerIcons[activity.authorId] : 'https://dummyimage.com/512/EEE/CCC?text=NoIcon') + ')'
+                }"></div>
+              </div>
+              <div style="flex-grow: 1;">
+                <header class="d-flex justify-content-between mb-1">
+                  <small><strong>{{activity.displayName}}</strong></small>
+                  <time v-bind:time="activity.time"><small class="text-muted">{{activity.time}}</small></time>
+                </header>
+                <p class="m-0" style="white-space: pre; font-size:14px;">{{activity.content}}</p>
+              </div>
+            </article>
+          </div>
         </div>
       </div>
     </script>
     <script type="text/x-template" id="me-scene-template">
-      <div class="d-flex flex-column">
-        <div class="bg-danger text-white d-flex justify-content-center px-1 align-items-center">
+      <div class="d-flex flex-column" style="position:absolute; top: 0; left:0; width: 100%; height:100%;">
+        <div class="bg-danger text-white d-flex justify-content-center p-1 align-items-center" style="flex-shrink: 0;">
           <strong class="py-2">プロフィール</strong>
         </div>
         <div class="pt-2" style="flex-grow: 1; overflow: auto">
@@ -195,7 +212,7 @@
           </div>
         </div>
         <div class="oModal bg-light d-flex flex-column" :class="{'oModal-shown': mode === 'signup'}">
-          <div class="bg-danger text-white d-flex justify-content-between px-1 align-items-center">
+          <div class="bg-danger text-white d-flex justify-content-between p-1 align-items-center">
             <span class="py-2 px-3 text-danger">
               <i class="fa fa-times"></i>
             </span>
@@ -227,7 +244,7 @@
           </div>
         </div>
         <div class="oModal bg-light" :class="{'oModal-shown': mode === 'signin'}">
-          <div class="bg-danger text-white d-flex justify-content-between px-1 align-items-center">
+          <div class="bg-danger text-white d-flex justify-content-between p-1 align-items-center">
             <span class="py-2 px-3 text-danger">
               <i class="fa fa-times"></i>
             </span>
