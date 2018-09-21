@@ -93,9 +93,6 @@
                       </span>
                     </span>
                   </div>
-                  <div class="px-1 pb-1">
-                    <small class="text-muted">{{player.message}}</small>
-                  </div>
                 </div>
               </div>
             </div>
@@ -126,7 +123,7 @@
                   <small><strong>{{activity.displayName}}</strong></small>
                   <time v-bind:time="activity.time"><small class="text-muted">{{activity.time}}</small></time>
                 </header>
-                <p class="m-0" style="white-space: pre; font-size:14px;">{{activity.content}}</p>
+                <p class="m-0" style="font-size:14px;">{{activity.content}}</p>
               </div>
             </article>
           </div>
