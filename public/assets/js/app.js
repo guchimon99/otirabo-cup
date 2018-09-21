@@ -215,7 +215,7 @@ window.addEventListener('load', function main() {
           if (!files) throw new Error("ファイルが選ばれていません")
 
           var file = files[0]
-          if(!file.type.match(/image\/png|image\/jpeg|image\/gif/)) throw new Error("JPG/PNG/GIFファイルを選んでください")
+          if(!file.type.match(/image\/png|image\/jpeg|image\/gif/)) throw new Error(file.type + "が選ばれています。JPG/PNG/GIFファイルを選んでください。")
 
           var reader = new FileReader()
 
