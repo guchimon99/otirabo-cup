@@ -44,9 +44,7 @@ window.addEventListener('load', function main() {
     created: function(){
       db.collection('activities').orderBy("timestamp", "desc").get().then((snapshot) =>{
         var activities = []
-        console.log(snapshot.docs)
         snapshot.docs.forEach((doc)=>{
-          console.log(doc)
           var data = doc.data()
           var d = new Date(data.timestamp)
           var time = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes()
