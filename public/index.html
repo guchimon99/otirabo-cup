@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>オティラボ杯</title>
+    <script defer src="/__/firebase/5.5.1/firebase-app.js"></script>
+    <script defer src="/__/firebase/5.5.1/firebase-auth.js"></script>
+    <script defer src="/__/firebase/5.5.1/firebase-firestore.js"></script>
+    <script defer src="/__/firebase/init.js"></script>
+    <meta property="og:title" content="オティラボ杯" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://otirabo-cup.firebaseapp.com" />
+    <meta property="og:image" content="https://otirabo-cup.firebaseapp.com/ogp.png" />
+    <meta property="og:site_name" content="オティラボ杯" />
+    <meta property="og:description" content="賞金10,000ヌメェコインのトレード大会、オティラボ杯の戦況をチェックしよう！" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" href="/favicon.ico" type="image/png">
+    <link rel="apple-touch-icon" sizes="192x192" href="/assets/img/touch-icon.png">
+    <link href="https://fonts.googleapis.com/css?family=M+PLUS+1p" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/solid.css" integrity="sha384-VGP9aw4WtGH/uPAOseYxZ+Vz/vaTb1ehm1bwx92Fm8dTrE+3boLfF1SpAtB1z7HW" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/fontawesome.css" integrity="sha384-1rquJLNOM3ijoueaaeS5m+McXPJCGdr5HcA03/VHXxcp2kX2sUrQDmFc3jR5i/C7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <script type="text/java">if ('serviceWorker' in navigator) navigator.serviceWorker.register('./service-worker.js').then(function() { console.log('Service Worker Registered'); });
+    </script>
+  </head>
+  <body>
+    <div id="app" class="app d-flex flex-column flex-md-column-reverese" style="width: 100%; height: 100%;">
+      <main class="app_main bg-light" style="flex-grow: 1; overflow: auto;" v-if="isLoaded">
+        <router-view></router-view>
+      </main>
+      <nav class="app_nav">
+        <ul class="list-unstyled p-0 px-3 m-0 d-flex justify-content-between bg-danger">
+          <li>
+            <router-link to="/home" class="d-block py-2 px-3 text-white">
+              <i class="fas fa-home"></i>
+            </router-link>
+          </li>
+          <li>
+            <router-link to="/activities" class="d-block py-2 px-3 text-white">
+              <i class="fas fa-th-list"></i>
+            </router-link>
+          </li>
+          <li>
+            <router-link to="/me" class="d-block py-2 px-3 text-white">
+              <i class="fas fa-user"></i>
+            </router-link>
+          </li>
+        </ul>
+      </nav>
+      <div class="splash bg-danger" :class="{'splash-hidden':isLoaded}">
+        <img class="splash_logo" src="assets/img/nume-white.svg" />
+      </div>
+    </div>
+    <script type="text/x-template" id="home-scene-template">
+      <div class="d-flex flex-column">
+        <div class="bg-danger text-white d-flex justify-content-center px-1 align-items-center">
+          <strong class="py-2">ホーム</strong>
+        </div>
+        <div style="flex-grow: 1; overflow: auto">
+          <div class="container-fluid">
+            <div class="row p-1">
+              <div v-for="player in players" class="col-6 col-sm-4 col-md-3 col-xl-2 p-1">
+                <div class="card">
+                  <div class="p-1">
+                    <span v-if="player.position == 'short'" class="btn btn-danger btn-sm btn-block">ショート</span>
+                    <span v-else-if="player.position == 'long'" class="btn btn-success btn-sm btn-block">ロング</span>
+                    <span v-else-if="player.position == 'none'" class="btn btn-secondary btn-sm btn-block">ノーポジ</span>
+                  </div>
+                  <img v-if="player.status=='angry'" src="/assets/img/mark_face_angry.png" class="w-100" />
+                  <img v-else-if="player.status=='ase'" src="/assets/img/mark_face_ase.png" class="w-100" />
+                  <img v-else-if="player.status=='cry'" src="/assets/img/mark_face_cry.png" class="w-100" />
+                  <img v-else-if="player.status=='hehe'" src="/assets/img/mark_face_hehe.png" class="w-100" />
+                  <img v-else-if="player.status=='jito'" src="/assets/img/mark_face_jito.png" class="w-100" />
+                  <img v-else-if="player.status=='laugh'" src="/assets/img/mark_face_laugh.png" class="w-100" />
+                  <img v-else-if="player.status=='odoroki'" src="/assets/img/mark_face_odoroki.png" class="w-100" />
+                  <img v-else-if="player.status=='smile'" src="/assets/img/mark_face_smile.png" class="w-100" />
+                  <img v-else-if="player.status=='tere'" src="/assets/img/mark_face_tere.png" class="w-100" />
+                  <div class="p-1 d-flex align-items-center">
+                    <div style="width: 2rem;">
+                      <img v-if="player.icon" v-bind:src="player.icon" class="w-100" />
+                      <img src="https://dummyimage.com/512/EEE/CCC" class="w-100" />
+                    </div>
+                    <small style="width: 100%" class="pl-2 text-truncate">
+                      <strong>{{player.displayName}}</strong>
+                    </small>
+                  </div>
+                  <div class="p-1 text-right">
+                    <span :class="{
+                      'text-success': player.amount - 10000 > 0,
+                      'text-danger': player.amount - 10000 < 0,
+                    }">
+                      {{player.amount}} <small>(<span v-if="player.amount - 10000 > 0">+</span>{{player.amount - 10000}})</small>
+                    </span>
+                  </div>
+                  <div class="p-1">
+                    <small class="text-muted">{{player.message}}</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </script>
+    <script type="text/x-template" id="activities-scene-template">
+      <div class="d-flex flex-column">
+        <div class="bg-danger text-white d-flex justify-content-center px-1 align-items-center">
+            <strong class="py-2">タイムライン</strong>
+        </div>
+        <div class="pt-2" style="flex-grow: 1; overflow: auto">
+          <article class="bg-white border-bottom d-flex px-2 py-3" v-for="activity in activities">
+            <div style="width: 40px; min-width: 40px;" class="mr-2">
+              <img src="https://dummyimage.com/512/EEE/CCC" class="w-100 rounded" />
+            </div>
+            <div style="flex-grow: 1;">
+              <header class="d-flex justify-content-between mb-2">
+                <small><strong>{{activity.displayName}}</strong></small>
+                <time v-bind:time="activity.time"><small class="text-muted">{{activity.time}}</small></time>
+              </header>
+              <p class="m-0" style="white-space: pre;">{{activity.content}}</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </script>
+    <script type="text/x-template" id="me-scene-template">
+      <div class="d-flex flex-column">
+        <div class="bg-danger text-white d-flex justify-content-center px-1 align-items-center">
+          <strong class="py-2">プロフィール</strong>
+        </div>
+        <div class="pt-2" style="flex-grow: 1; overflow: auto">
+          <div v-if="isAuthorized" class="py-3">
+            <div v-if="docId">
+              <form class="bg-white border-top border-bottom py-3 px-2 mb-4" @submit.prevent="update">
+                <div class="form-group">
+                  <label class="text-muted text-sm">名前</label>
+                  <input type="text" class="form-control" v-model.trim="displayName" required />
+                </div>
+                <div class="form-group">
+                  <label class="text-muted text-sm">資産</label>
+                  <input type="number" class="form-control" v-model.trim="amount" required />
+                </div>
+                <div class="form-group">
+                  <label class="text-muted text-sm">ポジション</label>
+                  <select class="form-control" v-model="position">
+                    <option value="long">ロング</option>
+                    <option value="short">ショート</option>
+                    <option value="none">ノーポジ</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="text-muted text-sm">一言</label>
+                  <textarea class="form-control" rows="3" v-model.trim="message"></textarea>
+                </div>
+                <div class="form-group">
+                  <label class="text-muted text-sm">表情</label>
+                  <select class="form-control" v-model="status">
+                    <option value="angry">怒り</option>
+                    <option value="ase">汗</option>
+                    <option value="cry">泣く</option>
+                    <option value="hehe">へへｗ</option>
+                    <option value="jito">じーっと</option>
+                    <option value="laugh">笑う</option>
+                    <option value="odoroki">驚き</option>
+                    <option value="smile">笑顔</option>
+                    <option value="tere">照れ</option>
+                  </select>
+                </div>
+                <div class="alert alert-danger text-sm" v-if="error" @click="error = null">
+                  {{error.message}}
+                </div>
+                <div>
+                  <button v-if="updateState == 'ready'" type="submit" class="btn btn-primary btn-block">更新する</button>
+                  <div v-else class="btn btn-secondary disabled btn-block">更新中</div>
+                </div>
+              </form>
+              <div class="border-top border-bottom mb-4">
+                <div class="p-2 text-center bg-white" @click="signout">
+                  <span class="text-danger">サインアウト</span>
+                </div>
+              </div>
+            </div>
+            <div v-else>
+              <div class="py-5 text-center">
+                <span class="text-muted">読み込み中</span>
+              </div>
+            </div>
+          </div>
+          <div v-else class="py-3">
+            <div class="border-top border-bottom">
+              <div class="bg-white pl-3">
+                <div class="border-bottom p-2" @click="mode='signup'">
+                  <span>アカウント作成</span>
+                </div>
+              </div>
+              <div class="bg-white pl-3">
+                <div class="p-2" @click="mode='signin'">
+                  <span>ログイン</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="oModal bg-light d-flex flex-column" :class="{'oModal-shown': mode === 'signup'}">
+          <div class="bg-danger text-white d-flex justify-content-between px-1 align-items-center">
+            <span class="py-2 px-3 text-danger">
+              <i class="fa fa-times"></i>
+            </span>
+            <strong>アカウント作成</strong>
+            <span class="py-2 px-3" @click="mode='none'">
+              <i class="fa fa-times"></i>
+            </span>
+          </div>
+          <div style="flex-grow: 1; overflow: auto;" class="py-3">
+            <form class="bg-white border-top border-bottom py-3 px-2" @submit.prevent="signup">
+              <div class="form-group">
+                <label class="text-muted text-sm">表示名</label>
+                <input type="text" class="form-control" v-model.trim="displayName" required />
+              </div>
+              <div class="form-group">
+                <label class="text-muted text-sm">メールアドレス</label>
+                <input type="email" class="form-control" v-model.trim="email" required />
+              </div>
+              <div class="form-group">
+                <label class="text-muted text-sm">パスワード</label>
+                <input type="password" class="form-control" v-model.trim="password" required minlength="8" />
+                <small class="mt-1 pl-2 text-muted">半角英数字8文字以上</small>
+              </div>
+              <div class="alert alert-danger text-sm" v-if="error" @click="error = null">
+                {{error.message}}
+              </div>
+              <button class="btn btn-primary btn-block">新しくアカウントを作成する</button>
+            </form>
+          </div>
+        </div>
+        <div class="oModal bg-light" :class="{'oModal-shown': mode === 'signin'}">
+          <div class="bg-danger text-white d-flex justify-content-between px-1 align-items-center">
+            <span class="py-2 px-3 text-danger">
+              <i class="fa fa-times"></i>
+            </span>
+            <strong>ログイン</strong>
+            <span class="py-2 px-3" @click="mode='none'">
+              <i class="fa fa-times"></i>
+            </span>
+          </div>
+          <div style="flex-grow: 1; overflow: auto;" class="py-3">
+            <form class="bg-white border-top border-bottom py-3 px-2" @submit.prevent="signin">
+              <div class="form-group">
+                <label class="text-muted text-sm">メールアドレス</label>
+                <input type="email" class="form-control" v-model.trim="email" required />
+              </div>
+              <div class="form-group">
+                <label class="text-muted text-sm">パスワード</label>
+                <input type="password" class="form-control" v-model.trim="password" required minlength="8" />
+              </div>
+              <div class="alert alert-danger text-sm" v-if="error" @click="error = null">
+                {{error.message}}
+              </div>
+              <button class="btn btn-primary btn-block">ログインする</button>
+            </form>
+          </div>
+        </div>
+        <div class="oModal bg-light d-flex justify-content-center align-items-center" :class="{'oModal-shown': mode === 'progress'}">
+          <p>処理中</p>
+        </div>
+      </div>
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.0.1/vue-router.min.js"></script>
+    <script src="/assets/js/app.js"></script>
+  </body>
+</html>

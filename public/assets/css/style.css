@@ -1,0 +1,47 @@
+body {
+  font-family: 'M PLUS 1p', sans-serif;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+.splash {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  opacity: 1;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  transition:
+    top 0s linear .5s,
+    opacity .5s ease 0s;
+}
+
+.splash.splash-hidden {
+  top: -100%;
+  opacity: 0;
+}
+
+.splash_logo {
+  width: 30vmin;
+  height: auto;
+}
+
+.oModal {
+  position: fixed;
+  top: 100%;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  transition: top .4s ease 0s;
+}
+
+.oModal-shown {
+  top: 0%;
+}
