@@ -13,7 +13,7 @@ window.addEventListener('load', function main() {
     },
     methods: {},
     created: function(){
-      this.unsubscribe = db.collection('players').orderBy("amount", "asc").onSnapshot((snapshot)=>{
+      this.unsubscribe = db.collection('players').orderBy("amount", "desc").onSnapshot((snapshot)=>{
         var players = []
         snapshot.forEach((doc) =>{
           var data = doc.data()
@@ -168,7 +168,7 @@ window.addEventListener('load', function main() {
         var uid = auth.currentUser.uid,
             docId = this.docId,
             displayName = this.displayName,
-            amount = this.amount,
+            amount = +this.amount,
             status = this.status,
             message = this.message,
             position = this.position
