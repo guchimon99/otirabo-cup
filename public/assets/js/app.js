@@ -48,7 +48,7 @@ window.addEventListener('load', function main() {
         snapshot.docs.forEach((doc)=>{
           console.log(doc)
           var data = doc.data()
-          var d = new Date(data.tiemstamp)
+          var d = new Date(data.timestamp)
           var time = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes()
           activities.push({
             time: time,
