@@ -71,23 +71,10 @@
                     <span v-else-if="player.position == 'long'" class="btn btn-success btn-sm btn-block">ロング</span>
                     <span v-else-if="player.position == 'none'" class="btn btn-secondary btn-sm btn-block">ノーポジ</span>
                   </div>
-                  <img v-if="player.status=='angry'" src="/assets/img/mark_face_angry.png" class="w-100" />
-                  <img v-else-if="player.status=='ase'" src="/assets/img/mark_face_ase.png" class="w-100" />
-                  <img v-else-if="player.status=='cry'" src="/assets/img/mark_face_cry.png" class="w-100" />
-                  <img v-else-if="player.status=='hehe'" src="/assets/img/mark_face_hehe.png" class="w-100" />
-                  <img v-else-if="player.status=='jito'" src="/assets/img/mark_face_jito.png" class="w-100" />
-                  <img v-else-if="player.status=='laugh'" src="/assets/img/mark_face_laugh.png" class="w-100" />
-                  <img v-else-if="player.status=='odoroki'" src="/assets/img/mark_face_odoroki.png" class="w-100" />
-                  <img v-else-if="player.status=='smile'" src="/assets/img/mark_face_smile.png" class="w-100" />
-                  <img v-else-if="player.status=='tere'" src="/assets/img/mark_face_tere.png" class="w-100" />
-                  <div class="p-1 d-flex align-items-center">
-                    <div style="width: 2rem;">
-                      <img v-if="player.icon" v-bind:src="player.icon" class="w-100" />
-                      <img src="https://dummyimage.com/512/EEE/CCC" class="w-100" />
-                    </div>
-                    <small style="width: 100%" class="pl-2 text-truncate">
-                      <strong>{{player.displayName}}</strong>
-                    </small>
+                  <img v-if="player.icon" v-bind:src="player.icon" class="w-100" />
+                  <img v-else src="https://dummyimage.com/512/EEE/CCC?text=NoIcon" class="w-100" />
+                  <div class="p-1">
+                    <small><strong>{{player.displayName}}</strong></small>
                   </div>
                   <div class="p-1 text-right">
                     <span :class="{
@@ -142,6 +129,20 @@
                   <input type="text" class="form-control" v-model.trim="displayName" required />
                 </div>
                 <div class="form-group">
+                  <label class="text-muted text-sm">アイコン</label>
+                  <div class="d-flex align-items-center mb-2">
+                    <div style="width:80px; min-width:80px; height:auto;" class="mr-2">
+                      <img v-if="icon" :src="icon" class="w-100" />
+                      <img v-else src="https://dummyimage.com/120/EEE/CCC.png&text=No+Icon" class="w-100" />
+                    </div>
+                    <label for="iconFile" class="btn btn-outline-primary">ファイルを選択</label>
+                    <input id="iconFile" type="file" @change="changeIconFile" class="from-control" style="display:none;" />
+                  </div>
+                  <div v-if="fileError" class="alert alert-danger">
+                    {{fileError.message}}
+                  </div>
+                </div>
+                <div class="form-group">
                   <label class="text-muted text-sm">資産</label>
                   <input type="number" class="form-control" v-model.trim="amount" required />
                 </div>
@@ -156,20 +157,6 @@
                 <div class="form-group">
                   <label class="text-muted text-sm">一言</label>
                   <textarea class="form-control" rows="3" v-model.trim="message"></textarea>
-                </div>
-                <div class="form-group">
-                  <label class="text-muted text-sm">表情</label>
-                  <select class="form-control" v-model="status">
-                    <option value="angry">怒り</option>
-                    <option value="ase">汗</option>
-                    <option value="cry">泣く</option>
-                    <option value="hehe">へへｗ</option>
-                    <option value="jito">じーっと</option>
-                    <option value="laugh">笑う</option>
-                    <option value="odoroki">驚き</option>
-                    <option value="smile">笑顔</option>
-                    <option value="tere">照れ</option>
-                  </select>
                 </div>
                 <div class="alert alert-danger text-sm" v-if="error" @click="error = null">
                   {{error.message}}
@@ -228,7 +215,7 @@
               </div>
               <div class="form-group">
                 <label class="text-muted text-sm">パスワード</label>
-                <input type="password" class="form-control" v-model.trim="password" required minlength="8" />
+                <input type="password" class="form-control" v-model.trim="password" required minlength="8" autocomplete="current-password" />
                 <small class="mt-1 pl-2 text-muted">半角英数字8文字以上</small>
               </div>
               <div class="alert alert-danger text-sm" v-if="error" @click="error = null">
@@ -256,7 +243,7 @@
               </div>
               <div class="form-group">
                 <label class="text-muted text-sm">パスワード</label>
-                <input type="password" class="form-control" v-model.trim="password" required minlength="8" />
+                <input type="password" class="form-control" v-model.trim="password" required minlength="8" autocomplete="current-password" />
               </div>
               <div class="alert alert-danger text-sm" v-if="error" @click="error = null">
                 {{error.message}}

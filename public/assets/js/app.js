@@ -22,7 +22,8 @@ window.addEventListener('load', function main() {
             amount: data.amount,
             message: data.message,
             position: data.position,
-            status: data.status
+            status: data.status,
+            icon: data.icon,
           })
         })
         this.players = players
@@ -50,6 +51,7 @@ window.addEventListener('load', function main() {
           var time = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes()
           activities.push({
             time: time,
+            icon: data.icon,
             displayName: data.displayName,
             content: data.content
           })
@@ -65,6 +67,7 @@ window.addEventListener('load', function main() {
       return {
         isAuthorized: true,
         mode: 'none',
+        fileError: null,
         error: null,
 
         email: '',
@@ -75,6 +78,7 @@ window.addEventListener('load', function main() {
         status: '',
         position: '',
         message: '',
+        icon: '',
 
         updateState: 'ready',
 
@@ -83,7 +87,7 @@ window.addEventListener('load', function main() {
       }
     },
     watch: {
-      mode: function(val){
+      mode: function(){
         if (this.mode === 'none') {
           this.displayName = ''
           this.email = ''
@@ -103,6 +107,7 @@ window.addEventListener('load', function main() {
             var player = {
               author_id: result.user.uid,
               display_name: displayName,
+              icon: null,
               amount: 10000,
               message: '準備はできた',
               status: 'laugh',
@@ -155,6 +160,7 @@ window.addEventListener('load', function main() {
             status = this.status,
             message = this.message,
             position = this.position
+            icon = this.icon
 
         db.collection('players').doc(docId).set({
           author_id: uid,
@@ -163,6 +169,7 @@ window.addEventListener('load', function main() {
           status: status,
           message: message,
           position: position,
+          icon: icon,
         }, { merge: true }).then(() =>{
           this.updateState = 'ready'
         }).catch((error) => {
@@ -189,6 +196,27 @@ window.addEventListener('load', function main() {
           })
         }
       },
+      changeIconFile: function(event){
+        this.fileError = null
+        try {
+          var files = event.target.files
+          if (!files) throw new Error("ファイルが選ばれていません")
+
+          var file = files[0]
+          if(!file.type.match(/image\/png|image\/jpg|image\/gif/)) throw new Error("JPG/PNG/GIFファイルを選んでください")
+
+          var reader = new FileReader()
+
+          reader.onload = (e) => {
+            this.icon = e.target.result
+          }
+
+          reader.readAsDataURL(file)
+
+        } catch (error) {
+          this.fileError = error
+        }
+      },
       subscribe: function(uid){
         if (!uid) return
 
@@ -204,6 +232,7 @@ window.addEventListener('load', function main() {
 
           this.docId = docId
           this.displayName = player.display_name
+          this.icon = player.icon
 
           this.amount = player.amount
           this.beforeAmount = player.amount
