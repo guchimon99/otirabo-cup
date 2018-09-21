@@ -38,7 +38,8 @@ window.addEventListener('load', function main() {
     template: '#activities-scene-template',
     data: function(){
       return {
-        activities: []
+        activities: [],
+        playerIcons: {},
       }
     },
     methods: {},
@@ -50,6 +51,7 @@ window.addEventListener('load', function main() {
           var d = new Date(data.timestamp)
           var time = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes()
           activities.push({
+            authorId: data.author_id,
             time: time,
             icon: data.icon,
             displayName: data.displayName,
@@ -57,6 +59,16 @@ window.addEventListener('load', function main() {
           })
         })
         this.activities = activities
+      })
+      db.collection('players').get().then((snapshot) => {
+        var playerIcons = {}
+
+        snapshot.forEach((doc)=>{
+          var data = doc.data()
+          playerIcons[data.author_id] = data.icon
+        })
+
+        this.playerIcons = playerIcons
       })
     }
   })

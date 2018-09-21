@@ -102,7 +102,8 @@
         <div class="pt-2" style="flex-grow: 1; overflow: auto">
           <article class="bg-white border-bottom d-flex px-2 py-3" v-for="activity in activities">
             <div style="width: 40px; min-width: 40px;" class="mr-2">
-              <img src="https://dummyimage.com/512/EEE/CCC" class="w-100 rounded" />
+              <img v-if="playerIcons && playerIcons[activity.authorId]" :src="playerIcons[activity.authorId]" class="w-100 rounded" />
+              <img v-else src="https://dummyimage.com/40/EEE/CCC?text=NoIcon" class="w-100 rounded" />
             </div>
             <div style="flex-grow: 1;">
               <header class="d-flex justify-content-between mb-2">
