@@ -4,6 +4,12 @@ window.addEventListener('load', function main() {
   var db = firebase.firestore()
   db.settings({ timestampsInSnapshots: true })
 
+  function timestampToStr(timestamp) {
+    if (!timestamp) return ''
+    var d = new Date(timestamp)
+    return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes()
+  }
+
   var HomeScene = Vue.component('home-scsne', {
     template: '#home-scene-template',
     data: function(){
@@ -19,6 +25,7 @@ window.addEventListener('load', function main() {
           var data = doc.data()
           players.push({
             displayName: data.display_name,
+            updatedAt: timestampToStr(data.updated_at),
             amount: data.amount,
             message: data.message,
             position: data.position,
@@ -44,17 +51,15 @@ window.addEventListener('load', function main() {
     },
     methods: {},
     created: function(){
-      db.collection('activities').orderBy("timestamp", "desc").get().then((snapshot) =>{
+      db.collection('activities').orderBy("created_at", "desc").get().then((snapshot) =>{
         var activities = []
         snapshot.docs.forEach((doc)=>{
           var data = doc.data()
-          var d = new Date(data.timestamp)
-          var time = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes()
           activities.push({
             authorId: data.author_id,
-            time: time,
             icon: data.icon,
             displayName: data.displayName,
+            createdAt: timestampToStr(data.createdAt),
             content: data.content
           })
         })
@@ -200,12 +205,14 @@ window.addEventListener('load', function main() {
         if (this.message != this.beforeMessage) content += this.message + "\n"
 
         if (content) {
+          var now = +(new Date().getTime())
           db.collection('activities').add({
             author_id: uid,
             displayName: displayName,
-            timestamp: new Date().getTime(),
+            created_at: now,
             content: content
           })
+          player.updated_at = now
         }
       },
       changeIconFile: function(event){
