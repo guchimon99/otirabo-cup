@@ -67,9 +67,15 @@
               <div v-for="player in players" class="col-6 col-sm-4 col-md-3 col-xl-2 p-1">
                 <div class="card">
                   <div class="p-1">
-                    <span v-if="player.currency && player.position == 'short'" class="btn btn-danger btn-sm btn-block">{{player.currency}} ショート</span>
-                    <span v-else-if="player.currency && player.position == 'long'" class="btn btn-success btn-sm btn-block">{{player.currency}} ロング</span>
-                    <span v-else class="btn btn-secondary btn-sm btn-block">ノーポジ</span>
+                    <span v-if="player.currency && player.position == 'short'" class="btn btn-danger btn-sm btn-block">
+                      <span style="text-transform: uppercase;" class="mr-1">{{player.currency}}</span>ショート
+                    </span>
+                    <span v-else-if="player.currency && player.position == 'long'" class="btn btn-success btn-sm btn-block">
+                      <span style="text-transform: uppercase;" class="mr-1">{{player.currency}}</span>ロング
+                    </span>
+                    <span v-else-if="player.position == 'secret'" class="btn btn-dark btn-sm btn-block">秘密</span>
+                    <span v-else-if="player.position == 'giveup'" class="btn btn-secondary btn-sm btn-block" disabled>ギブアップ</span>
+                    <span v-else class="btn btn-light btn-sm btn-block">ノーポジ</span>
                   </div>
                   <div class="mb-1" :style="{
                     'width':'100%',
@@ -122,11 +128,11 @@
                 }"></div>
               </div>
               <div style="flex-grow: 1;">
-                <header class="d-flex justify-content-between mb-1">
+                <header class="d-flex justify-content-between mb-1 align-items-start">
                   <small><strong>{{players[activity.authorId] ? players[activity.authorId].displayName : "-" }}</strong></small>
-                  <time v-bind:time="activity.time"><small class="text-muted">{{activity.createdAt}}</small></time>
+                  <time v-bind:time="activity.createdAt" class="text-muted" style="font-size: 12px;">{{activity.createdAt}}</time>
                 </header>
-                <p class="m-0" style="font-size:14px;">{{activity.content}}</p>
+                <p class="m-0">{{activity.content}}</p>
               </div>
             </article>
           </div>
@@ -174,11 +180,14 @@
                     <option value="long">ロング</option>
                     <option value="short">ショート</option>
                     <option value="none">ノーポジ</option>
+                    <option value="secret">秘密</option>
+                    <option value="giveup">ギブアップ</option>
                   </select>
                 </div>
                 <div class="form-group">
                   <label class="text-muted text-sm">一言</label>
-                  <textarea class="form-control" rows="3" v-model.trim="message"></textarea>
+                  <textarea class="form-control" rows="3" v-model.trim="message" maxlength="200"></textarea>
+                  <small>{{message.length}} / 200</small>
                 </div>
                 <div class="alert alert-danger text-sm" v-if="error" @click="error = null">
                   {{error.message}}
