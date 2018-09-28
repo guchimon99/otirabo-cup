@@ -29,7 +29,7 @@ window.addEventListener('load', function main() {
             amount: data.amount,
             message: data.message,
             position: data.position,
-            status: data.status,
+            currency: data.currency,
             icon: data.icon,
           })
         })
@@ -46,7 +46,7 @@ window.addEventListener('load', function main() {
     data: function(){
       return {
         activities: [],
-        playerIcons: {},
+        players: {},
       }
     },
     methods: {},
@@ -57,8 +57,6 @@ window.addEventListener('load', function main() {
           var data = doc.data()
           activities.push({
             authorId: data.author_id,
-            icon: data.icon,
-            displayName: data.displayName,
             createdAt: timestampToStr(data.createdAt),
             content: data.content
           })
@@ -66,14 +64,15 @@ window.addEventListener('load', function main() {
         this.activities = activities
       })
       db.collection('players').get().then((snapshot) => {
-        var playerIcons = {}
-
-        snapshot.forEach((doc)=>{
+        var players = {}
+        snapshot.forEach((doc) => {
           var data = doc.data()
-          playerIcons[data.author_id] = data.icon
+          players[data.author_id] = {
+            displayName: data.display_name,
+            icon: data.icon,
+          }
         })
-
-        this.playerIcons = playerIcons
+        this.players = players
       })
     }
   })
@@ -96,6 +95,7 @@ window.addEventListener('load', function main() {
         position: '',
         message: '',
         icon: '',
+        currency: '',
 
         updateState: 'ready',
 
@@ -176,27 +176,25 @@ window.addEventListener('load', function main() {
             amount = +this.amount,
             status = this.status,
             message = this.message,
-            position = this.position
+            position = this.position,
+            currency = this.currency,
             icon = this.icon
 
-        db.collection('players').doc(docId).set({
+        var player = {
           author_id: uid,
           display_name: displayName,
           amount: amount,
           status: status,
           message: message,
           position: position,
+          currency: currency,
           icon: icon,
-        }, { merge: true }).then(() =>{
-          this.updateState = 'ready'
-        }).catch((error) => {
-          this.updateState = 'ready'
-          this.error = error
-        })
+        }
 
         var content = ""
 
         if (this.amount != this.beforeAmount) content += "資産が" + this.amount + "になりました。\n"
+        if (this.currency != this.beforecurrency) content += "銘柄を" + this.currency + "になりました。\n"
         if (this.position != this.beforePosition) {
           if (this.position === "long") content += "ロングにポジションを取りました。\n"
           if (this.position === "short") content += "ショートにポジションを取りました。\n"
@@ -208,12 +206,18 @@ window.addEventListener('load', function main() {
           var now = +(new Date().getTime())
           db.collection('activities').add({
             author_id: uid,
-            displayName: displayName,
             created_at: now,
             content: content
           })
           player.updated_at = now
         }
+
+        db.collection('players').doc(docId).set(player, { merge: true }).then(() =>{
+          this.updateState = 'ready'
+        }).catch((error) => {
+          this.updateState = 'ready'
+          this.error = error
+        })
       },
       changeIconFile: function(event){
         this.fileError = null
@@ -223,6 +227,8 @@ window.addEventListener('load', function main() {
 
           var file = files[0]
           if(!file.type.match(/image\/png|image\/jpeg|image\/gif/)) throw new Error(file.type + "が選ばれています。JPG/PNG/GIFファイルを選んでください。")
+
+          if(file.size > 200000) throw new Error("ファイルサイズが大きすぎます。")
 
           var reader = new FileReader()
 
@@ -259,7 +265,8 @@ window.addEventListener('load', function main() {
           this.beforePosition = player.position
           this.message = player.message
           this.beforeMessage = player.message
-          this.status = player.status
+          this.currency = player.currency
+          this.beforeCurrency = player.currency
         })
       }
     },

@@ -67,9 +67,9 @@
               <div v-for="player in players" class="col-6 col-sm-4 col-md-3 col-xl-2 p-1">
                 <div class="card">
                   <div class="p-1">
-                    <span v-if="player.position == 'short'" class="btn btn-danger btn-sm btn-block">ショート</span>
-                    <span v-else-if="player.position == 'long'" class="btn btn-success btn-sm btn-block">ロング</span>
-                    <span v-else-if="player.position == 'none'" class="btn btn-secondary btn-sm btn-block">ノーポジ</span>
+                    <span v-if="player.currency && player.position == 'short'" class="btn btn-danger btn-sm btn-block">{{player.currency}} ショート</span>
+                    <span v-else-if="player.currency && player.position == 'long'" class="btn btn-success btn-sm btn-block">{{player.currency}} ロング</span>
+                    <span v-else class="btn btn-secondary btn-sm btn-block">ノーポジ</span>
                   </div>
                   <div class="mb-1" :style="{
                     'width':'100%',
@@ -93,6 +93,9 @@
                       </span>
                     </span>
                   </div>
+                  <div class="px-1 pb-1 text-right text-muted" style="font-size: 12px">
+                    最終更新日 : {{player.updatedAt || '-'}}
+                  </div>
                 </div>
               </div>
             </div>
@@ -115,13 +118,13 @@
                   'padding-bottom':' 100%',
                   'background-position':'center',
                   'background-size':'cover',
-                  'background-image': 'url(' + (playerIcons && playerIcons[activity.authorId] ? playerIcons[activity.authorId] : 'https://dummyimage.com/512/EEE/CCC?text=NoIcon') + ')'
+                  'background-image': 'url(' + (players && players[activity.authorId] ? players[activity.authorId].icon : 'https://dummyimage.com/512/EEE/CCC?text=NoIcon') + ')'
                 }"></div>
               </div>
               <div style="flex-grow: 1;">
                 <header class="d-flex justify-content-between mb-1">
-                  <small><strong>{{activity.displayName}}</strong></small>
-                  <time v-bind:time="activity.time"><small class="text-muted">{{activity.time}}</small></time>
+                  <small><strong>{{players[activity.authorId] ? players[activity.authorId].displayName : "-" }}</strong></small>
+                  <time v-bind:time="activity.time"><small class="text-muted">{{activity.createdAt}}</small></time>
                 </header>
                 <p class="m-0" style="font-size:14px;">{{activity.content}}</p>
               </div>
@@ -160,6 +163,10 @@
                 <div class="form-group">
                   <label class="text-muted text-sm">資産</label>
                   <input type="number" class="form-control" v-model.trim="amount" required />
+                </div>
+                <div class="form-group">
+                  <label class="text-muted text-sm">銘柄</label>
+                  <input type="text" class="form-control" v-model.trim="currency" required />
                 </div>
                 <div class="form-group">
                   <label class="text-muted text-sm">ポジション</label>
