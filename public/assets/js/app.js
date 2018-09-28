@@ -57,7 +57,7 @@ window.addEventListener('load', function main() {
           var data = doc.data()
           activities.push({
             authorId: data.author_id,
-            createdAt: timestampToStr(data.createdAt),
+            createdAt: timestampToStr(data.created_at),
             content: data.content
           })
         })
